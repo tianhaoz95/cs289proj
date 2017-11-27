@@ -2,7 +2,7 @@
 
 ## Learn mood for songs using spotify labels
 
-## Installation
+### Installation
 
 first clone the repo using `git clone https://github.com/tianhaoz95/cs289proj.git`
 
