@@ -30,12 +30,13 @@ def main():
     model = Sequential()
     feature_cnt = train_x.shape[1]
     class_cnt = 10
-    model.add(Dense(32, input_shape=(feature_cnt,)))
-    model.add(Activation('relu'))
-    model.add(Dense(32))
-    model.add(Activation('relu'))
-    model.add(Dense(class_cnt))
-    model.add(Activation('softmax'))
+    model.add(Dense(32, activation='relu', input_shape=(feature_cnt,)))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(class_cnt, activation='softmax'))
+    sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    model.fit(train_x, train_y, epochs=10, batch_size=100)
+    score = model.evaluate(test_x, test_y, batch_size=100)
 
 if __name__ == "__main__":
     try:
