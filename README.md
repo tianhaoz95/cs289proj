@@ -1,4 +1,4 @@
-# cs289proj
+# CS289 Final Project
 
 ## Learn mood for songs using spotify labels
 
