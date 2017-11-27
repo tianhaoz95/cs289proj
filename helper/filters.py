@@ -1,5 +1,6 @@
 import numpy as np
 
+# other filter functions can derive from this base class
 class BasicFilterFunc():
     def run(self, col):
         res = []
