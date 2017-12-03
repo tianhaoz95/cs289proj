@@ -13,15 +13,12 @@ def read_data(filename):
     raw_dataset = filter_wrapper.run(raw)
     return raw_dataset
 
-def partition_data(data):
-    raise ValueError("not implemented")
-
 def main():
     print("starting main process ...")
     train_raw = read_data("data/train_songs.csv")
     test_raw = read_data("data/test_songs.csv")
-    train_x, train_y = partition_data(data=train_raw)
-    val_x, val_y = partition_data(data=test_raw)
+    train_x, train_y = sp.partition_data(data=train_raw)
+    val_x, val_y = sp.partition_data(data=test_raw)
     iter_cnt = 10
     model_list = os.listdir("model")
     model = None
@@ -48,7 +45,7 @@ def main():
         model.save('model/saved_model.h5')
     print("start testing ...")
     score = model.evaluate(x=val_x, y=val_y, batch_size=50, verbose=1)
-    print("final testing score is ", score)
+    print("final testing score is: ", score)
 
 if __name__ == "__main__":
     try:

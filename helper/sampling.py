@@ -14,3 +14,6 @@ def sample_train(x, y, size=50):
     output_x = np.array(res_x)
     output_y = np.array(res_y)
     return output_x, output_y
+
+def partition_data(data):
+    raise ValueError("not implemented")
