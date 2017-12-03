@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import helper.visualization as viz
 import helper.preprocess as prep
+import helper.sampling as sp
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Flatten
 
@@ -15,17 +16,10 @@ def read_data(filename):
 def partition_data(data):
     raise ValueError("not implemented")
 
-def select_feature(data):
-    return data
-
-def sample_train(x, y, size=50):
-    raise ValueError("not implemented")
-
 def main():
     print("starting main process ...")
     train_raw = read_data("data/train_songs.csv")
     test_raw = read_data("data/test_songs.csv")
-    data_selected = select_feature(data_all)
     train_x, train_y = partition_data(data=train_raw)
     val_x, val_y = partition_data(data=test_raw)
     iter_cnt = 10
@@ -48,7 +42,7 @@ def main():
         print("finished constructing new model")
     for i in range(iter_cnt):
         print("executing iteration ", str(i), " out of ", str(iter_cnt), " ... ")
-        sample_x, sample_y = sample_train(x=train_x, y=train_y, size=50)
+        sample_x, sample_y = sp.sample_train(x=train_x, y=train_y, size=50)
         model.fit(x=sample_x, y=sample_y, batch_size=50, epochs=10, verbose=1)
         print("finished this round of training, saving model snapshot ...")
         model.save('model/saved_model.h5')
