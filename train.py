@@ -40,7 +40,7 @@ def main():
     for i in range(iter_cnt):
         print("executing iteration ", str(i), " out of ", str(iter_cnt), " ... ")
         sample_x, sample_y = sp.sample_train(x=train_x, y=train_y, size=50)
-        model.fit(x=sample_x, y=sample_y, batch_size=50, epochs=10, verbose=1)
+        history = model.fit(x=sample_x, y=sample_y, batch_size=50, epochs=10, verbose=1)
         print("finished this round of training, saving model snapshot ...")
         model.save('model/saved_model.h5')
     print("start testing ...")
