@@ -13,6 +13,15 @@ class BasicFilterFunc():
     def prep(self, d):
         return d
 
+class CategoricalFilterFunc(BasicFilterFunc):
+    def __init__(self):
+        self.dict = {}
+
+    def prep(self, d):
+        if d not in self.dict:
+            self.dict[d] = len(self.dict) + 1
+        return self.dict[d]
+
 class SkipFilterFunc():
     def run(self, col):
         return True, None

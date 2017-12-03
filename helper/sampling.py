@@ -5,8 +5,9 @@ import math
 def sample_train(x, y, size=50):
     res_x = []
     res_y = []
+    limit = len(x)
     while len(res_x) < size:
-        idx = math.floor(random() * len(x))
+        idx = math.floor(random() * limit)
         elt_x = x[idx]
         elt_y = y[idx]
         res_x.append(elt_x)
