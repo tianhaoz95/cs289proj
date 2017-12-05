@@ -10,7 +10,7 @@ from keras.optimizers import SGD
 def main():
     print("starting main process ...")
     raw_x, raw_y = utils.read_data("data/data_all.csv")
-    train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.7)
+    train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.85)
     model_list = os.listdir("model")
     model = None
     model_name = config.model_uid + ".h5"
@@ -27,11 +27,11 @@ def main():
         model.add(Dense(100, activation='relu', input_shape=(feature_cnt,)))
         model.add(Dense(500, activation='relu'))
         model.add(Dense(1000, activation='relu'))
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.5))
         model.add(Dense(1000, activation='relu'))
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.5))
         model.add(Dense(1000, activation='relu'))
-        model.add(Dropout(0.2))
+        model.add(Dropout(0.5))
         model.add(Dense(500, activation='relu'))
         model.add(Dense(100, activation='relu'))
         model.add(Dense(class_cnt, activation='softmax'))
