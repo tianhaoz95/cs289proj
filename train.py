@@ -1,28 +1,21 @@
 import numpy as np
-import pandas as pd
-import helper.visualization as viz
-import helper.preprocess as prep
+import os
+import helper.config as config
 import helper.sampling as sp
+import helper.utils as utils
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Flatten
-
-def read_data(filename):
-    raw = pd.read_csv(filename)
-    viz.show_features(raw)
-    filter_wrapper = prep.FilterWrapper()
-    raw_dataset = filter_wrapper.run(raw)
-    return raw_dataset
+from keras.optimizers import SGD
 
 def main():
     print("starting main process ...")
-    train_raw = read_data("data/train_songs.csv")
-    test_raw = read_data("data/test_songs.csv")
-    train_x, train_y = sp.partition_data(data=train_raw)
-    val_x, val_y = sp.partition_data(data=test_raw)
-    iter_cnt = 10
+    raw_x, raw_y = utils.read_data("data/data_all.csv")
+    train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.7)
     model_list = os.listdir("model")
     model = None
-    if "saved_model.h5" in model_list:
+    model_name = config.model_uid + ".h5"
+    model_dir = "model/" + model_name
+    if model_name in model_list:
         print("found previous model, recovering ...")
         model = load_model('model/saved_model.h5')
         print("previous model loaded")
@@ -31,21 +24,35 @@ def main():
         model = Sequential()
         feature_cnt = train_x.shape[1]
         class_cnt = train_y.shape[1]
-        model.add(Dense(32, activation='relu', input_shape=(feature_cnt,)))
-        model.add(Dense(32, activation='relu'))
+        model.add(Dense(100, activation='relu', input_shape=(feature_cnt,)))
+        model.add(Dense(500, activation='relu'))
+        model.add(Dense(1000, activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(1000, activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(1000, activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(500, activation='relu'))
+        model.add(Dense(100, activation='relu'))
         model.add(Dense(class_cnt, activation='softmax'))
         sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
         print("finished constructing new model")
-    for i in range(iter_cnt):
-        print("executing iteration ", str(i), " out of ", str(iter_cnt), " ... ")
-        sample_x, sample_y = sp.sample_train(x=train_x, y=train_y, size=50)
-        history = model.fit(x=sample_x, y=sample_y, batch_size=50, epochs=10, verbose=1)
+    for i in range(config.iter_cnt):
+        print("executing iteration ", str(i), " out of ", str(config.iter_cnt), " ... ")
+        sample_x, sample_y = sp.sample_train(x=train_x, y=train_y, size=config.sample_size)
+        history = model.fit(x=sample_x, y=sample_y, batch_size=config.train_batch, epochs=config.train_epochs, verbose=1)
         print("finished this round of training, saving model snapshot ...")
-        model.save('model/saved_model.h5')
+        model.save(model_dir)
     print("start testing ...")
-    score = model.evaluate(x=val_x, y=val_y, batch_size=50, verbose=1)
+    score = model.evaluate(x=val_x, y=val_y, verbose=1)
     print("final testing score is: ", score)
+    print("try predicting ...")
+    pred = model.predict(x=val_x, verbose=1)
+    print("first 3 rows of prediction: ")
+    print(pred[:3])
+    print("first 3 rows of correct label: ")
+    print(val_y[:3])
 
 if __name__ == "__main__":
     try:

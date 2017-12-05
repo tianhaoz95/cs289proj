@@ -1,1 +1,7 @@
 /virenv
+/model/*.h5
+/model/.*
+/data/.*
+.DS_Store
+.DS_Store
+.DS_Store

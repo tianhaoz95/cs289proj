@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 # other filter functions can derive from this base class
 class BasicFilterFunc():
@@ -7,15 +8,31 @@ class BasicFilterFunc():
         params = self.preprocess(col)
         for r in col:
             d = self.prep(r, params)
-            res.append([d])
+            res.append(d)
         output = np.array(res)
-        return False, output
+        return output
 
     def preprocess(self, col):
         return None
 
     def prep(self, d, params):
-        return d
+        return [abs(d)]
+
+class CategoricalOneHotFilterFunc(BasicFilterFunc):
+    def __init__(self):
+        self.dict = {}
+
+    def preprocess(self, col):
+        for r in col:
+            if r != 'NaN' and r not in self.dict:
+                self.dict[r] = len(self.dict)
+
+    def prep(self, d, params):
+        category_cnt = len(self.dict)
+        res = [0 for i in range(category_cnt)]
+        if d != 'NaN':
+            res[self.dict[d]] = 1
+        return res
 
 class CategoricalFilterFunc(BasicFilterFunc):
     def __init__(self):
@@ -24,9 +41,12 @@ class CategoricalFilterFunc(BasicFilterFunc):
     def prep(self, d, params):
         if d not in self.dict:
             self.dict[d] = len(self.dict) + 1
-        return self.dict[d]
+        return [self.dict[d]]
 
 class ShrinkFilterFunc(BasicFilterFunc):
+    def __init__(self, limit=1):
+        self.val_limit = limit
+
     def preprocess(self, col):
         max_elt = -float("inf")
         for r in col:
@@ -35,8 +55,4 @@ class ShrinkFilterFunc(BasicFilterFunc):
 
     def prep(self, d, params):
         max_elt = params["max_elt"]
-        return d / max_elt
-
-class SkipFilterFunc():
-    def run(self, col):
-        return True, None
+        return [abs(d / max_elt * self.val_limit)]
