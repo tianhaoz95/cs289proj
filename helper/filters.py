@@ -16,7 +16,7 @@ class BasicFilterFunc():
         return None
 
     def prep(self, d, params):
-        return [abs(d)]
+        return [abs(float(d))]
 
 class CategoricalOneHotFilterFunc(BasicFilterFunc):
     def __init__(self):
@@ -50,9 +50,13 @@ class ShrinkFilterFunc(BasicFilterFunc):
     def preprocess(self, col):
         max_elt = -float("inf")
         for r in col:
-            max_elt = max(max_elt, abs(r))
+            if r != "NaN":
+                max_elt = max(max_elt, abs(float(r)))
         return {"max_elt": max_elt}
 
     def prep(self, d, params):
+        res = 0
         max_elt = params["max_elt"]
-        return [abs(d / max_elt * self.val_limit)]
+        if d != "NaN":
+            res = abs(float(d) / max_elt * self.val_limit)
+        return [res]

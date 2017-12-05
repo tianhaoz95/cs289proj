@@ -25,6 +25,8 @@ class FilterWrapper():
                 col = data[f]
                 for filter_func in filter_funcs:
                     col = filter_func.run(col)
+                print("sample after preprocessing feature ", f, ": ")
+                print(col[0,:])
                 if f == label_name:
                     res_y = col
                 else:

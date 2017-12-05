@@ -17,7 +17,7 @@ def main():
     model_dir = "model/" + model_name
     if model_name in model_list:
         print("found previous model, recovering ...")
-        model = load_model('model/saved_model.h5')
+        model = load_model(model_dir)
         print("previous model loaded")
     else:
         print("no previous model found, constructing a new one ...")
