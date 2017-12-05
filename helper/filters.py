@@ -50,13 +50,13 @@ class ShrinkFilterFunc(BasicFilterFunc):
     def preprocess(self, col):
         max_elt = -float("inf")
         for r in col:
-            if r != "NaN":
+            if type(r) != 'str' or r != "NaN":
                 max_elt = max(max_elt, abs(float(r)))
         return {"max_elt": max_elt}
 
     def prep(self, d, params):
         res = 0
         max_elt = params["max_elt"]
-        if d != "NaN":
+        if type(d) != 'str' or d != "NaN":
             res = abs(float(d) / max_elt * self.val_limit)
         return [res]

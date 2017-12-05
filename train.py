@@ -39,7 +39,7 @@ def main():
         model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
         print("finished constructing new model")
     for i in range(config.iter_cnt):
-        print("executing iteration ", str(i), " out of ", str(config.iter_cnt), " ... ")
+        print("executing iteration ", str(i+1), " out of ", str(config.iter_cnt), " ... ")
         sample_x, sample_y = sp.sample_train(x=train_x, y=train_y, size=config.sample_size)
         history = model.fit(x=sample_x, y=sample_y, batch_size=config.train_batch, epochs=config.train_epochs, verbose=1)
         print("finished this round of training, saving model snapshot ...")
@@ -50,6 +50,7 @@ def main():
     print("try predicting ...")
     pred = model.predict(x=val_x, verbose=1)
     print("first 3 rows of prediction: ")
+    np.set_printoptions(precision=3)
     print(pred[:3])
     print("first 3 rows of correct label: ")
     print(val_y[:3])
