@@ -2,19 +2,48 @@ import pandas as pd
 from .visualization import show_features
 from .preprocess import FilterWrapper
 from .filters import *
+import numpy as np
 
-def read_data(filename):
+def read_kmeans_data(filename_labeled, filename_unlabeled, label_name):
+    raw_unlabeled_x, raw_unlabeled_y = read_data(filename_unlabeled, "not_available")
+    raw_labeled_x, raw_labeled_y = read_data(filename_labeled, label_name)
+    raw_labeled = pd.read_csv(filename_labeled)
+    labeled_ids = raw_labeled["id"]
+    raw_unlabeled = pd.read_csv(filename_unlabeled)
+    unlabeled_ids = raw_unlabeled["id"]
+    train_x = []
+    val_x = []
+    val_y = []
+    id_dict = {}
+    for i in range(len(labeled_ids)):
+        id_dict[labeled_ids[i]] = i
+    for i in range(len(unlabeled_ids)):
+        label_id = unlabeled_ids[i]
+        if label_id in id_dict:
+            val_x.append(raw_unlabeled_x[i])
+            val_y.append(raw_labeled_y[id_dict[label_id]])
+        else:
+            train_x.append(raw_unlabeled_x[i])
+    return np.array(train_x), np.array(val_x), val_y
+
+def read_data(filename, label_name):
     raw = pd.read_csv(filename)
     show_features(raw)
     filter_wrapper = FilterWrapper()
     add_filters(filter_wrapper)
-    raw_x, raw_y = filter_wrapper.run(raw, 'mood_1')
+    raw_x, raw_y = filter_wrapper.run(raw, label_name)
     print("The shape of x after preprocessing: ", raw_x.shape)
-    print("The shape of y after preprocessing: ", raw_y.shape)
+    try:
+        print("The shape of y after preprocessing: ", raw_y.shape)
+    except:
+        print("labels do not exist")
     print("The first row of x: ")
     print(raw_x[0,:])
-    print("The first 3 rows of y: ")
-    print(raw_y[:3,:])
+    try:
+        print("The first 3 rows of y: ")
+        print(raw_y[:3,:])
+    except:
+        print("labels do not exist")
     return raw_x, raw_y
 
 def partition_data(x, y, ratio=0.7):
@@ -57,19 +86,20 @@ def add_filters(filter_wrapper):
 
     # Categorical filters
     filter_wrapper.add('artist_era_1', CategoricalOneHotFilterFunc())
-    filter_wrapper.add('artist_era_2', CategoricalOneHotFilterFunc())
-    # filter_wrapper.add('artist_origin_1', CategoricalOneHotFilterFunc())
+    # filter_wrapper.add('artist_era_2', CategoricalOneHotFilterFunc())
+    filter_wrapper.add('artist_origin_1', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('artist_origin_2', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('artist_origin_3', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('artist_origin_4', CategoricalOneHotFilterFunc())
     filter_wrapper.add('artist_type_1', CategoricalOneHotFilterFunc())
-    filter_wrapper.add('artist_type_2', CategoricalOneHotFilterFunc())
+    # filter_wrapper.add('artist_type_2', CategoricalOneHotFilterFunc())
     filter_wrapper.add('genre_1', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('genre_2', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('genre_3', CategoricalOneHotFilterFunc())
     filter_wrapper.add('mood_1', CategoricalOneHotFilterFunc())
+    # filter_wrapper.add('mood_2', CategoricalOneHotFilterFunc())
     filter_wrapper.add('tempo_1', CategoricalOneHotFilterFunc())
-    filter_wrapper.add('tempo_2', CategoricalOneHotFilterFunc())
-    filter_wrapper.add('tempo_3', CategoricalOneHotFilterFunc())
+    # filter_wrapper.add('tempo_2', CategoricalOneHotFilterFunc())
+    # filter_wrapper.add('tempo_3', CategoricalOneHotFilterFunc())
     filter_wrapper.add('time_signature', CategoricalOneHotFilterFunc())
     filter_wrapper.add('mode', CategoricalOneHotFilterFunc())

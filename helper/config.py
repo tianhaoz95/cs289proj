@@ -7,3 +7,6 @@ train_epochs = 10
 
 # the unique code of the model trained
 model_uid = "saved_model"
+
+train_mode = "kmean"
+# train_mode = "dnn"

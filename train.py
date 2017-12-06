@@ -6,10 +6,11 @@ import helper.utils as utils
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Flatten
 from keras.optimizers import SGD
+from sklearn.cluster import KMeans
 
-def main():
-    print("starting main process ...")
-    raw_x, raw_y = utils.read_data("data/data_all.csv")
+def main_dnn():
+    print("starting main dnn process ...")
+    raw_x, raw_y = utils.read_data("data/data_all.csv", "mood_1")
     train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.85)
     model_list = os.listdir("model")
     model = None
@@ -55,9 +56,21 @@ def main():
     print("first 3 rows of correct label: ")
     print(val_y[:3])
 
+def main_kmean():
+    print("starting main k means process ...")
+    train_x, val_x, val_y = utils.read_kmeans_data("data/data_all.csv", "data/no_label_all.csv", "mood_1")
+    class_cnt = val_y.shape[1]
+    kmeans = KMeans(n_clusters=class_cnt, random_state=0).fit(X=train_x)
+    pred = kmeans.predict(X=val_x)
+    print("predicted test set: ")
+    print(pred)
+
 if __name__ == "__main__":
     try:
-        main()
+        if config.train_mode == "dnn":
+            main_dnn()
+        if config.train_mode == "kmean":
+            main_kmean()
     except ValueError as err:
         for e in err.args:
             print(e)
