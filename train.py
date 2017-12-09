@@ -8,13 +8,18 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.optimizers import SGD
 from sklearn.cluster import KMeans
 from sklearn import tree
+import matplotlib.pyplot as plt
 
 def main_dnn():
     print("starting main dnn process ...")
-    raw_x, raw_y = utils.read_data("data/data_all.csv", "mood_1")
+    raw_x, raw_y = utils.read_data("data/data_all_modified.csv", "mood_1")
     train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.85)
     model_list = os.listdir("model")
     model = None
+    train_accuracy = []
+    train_loss = []
+    test_accuracy = []
+    test_loss = []
     model_name = config.model_uid + ".h5"
     model_dir = "model/" + model_name
     if model_name in model_list:
@@ -37,13 +42,20 @@ def main_dnn():
         model.add(Dense(500, activation='relu'))
         model.add(Dense(100, activation='relu'))
         model.add(Dense(class_cnt, activation='softmax'))
-        sgd = SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
+        sgd = SGD(lr=0.001, decay=1e-6, momentum=0.9, nesterov=True)
         model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
         print("finished constructing new model")
     for i in range(config.iter_cnt):
         print("executing iteration ", str(i+1), " out of ", str(config.iter_cnt), " ... ")
         sample_x, sample_y = sp.sample_train(x=train_x, y=train_y, size=config.sample_size)
         history = model.fit(x=sample_x, y=sample_y, batch_size=config.train_batch, epochs=config.train_epochs, verbose=1)
+        train_loss.extend(history.history['loss'])
+        train_accuracy.extend(history.history['acc'])
+        test_score = model.evaluate(x=val_x, y=val_y, verbose=1)
+        print("intermediate testing score: ")
+        print(test_score)
+        test_loss.append(test_score[0])
+        test_accuracy.append(test_score[1])
         print("finished this round of training, saving model snapshot ...")
         model.save(model_dir)
     print("start testing ...")
@@ -56,10 +68,26 @@ def main_dnn():
     print(pred[:3])
     print("first 3 rows of correct label: ")
     print(val_y[:3])
+    print("plotting training loss ...")
+    plt.figure()
+    plt.plot(train_loss)
+    plt.savefig("plots/neural_network_training_loss.png")
+    print("printing training accuracy ...")
+    plt.figure()
+    plt.plot(train_accuracy)
+    plt.savefig("plots/neural_network_training_accuracy.png")
+    print("printing testing loss")
+    plt.figure()
+    plt.plot(test_loss)
+    plt.savefig("plots/neural_network_testing_loss.png")
+    print("printing testing accuracy")
+    plt.figure()
+    plt.plot(test_accuracy)
+    plt.savefig("plots/neural_network_testing_accuracy.png")
 
 def main_kmean():
     print("starting main k means process ...")
-    train_x, val_x, val_y = utils.read_kmeans_data("data/data_all.csv", "data/no_label_all.csv", "mood_1")
+    train_x, val_x, val_y = utils.read_kmeans_data("data/data_all_modified.csv", "data/no_label_all.csv", "mood_1")
     class_cnt = val_y.shape[1]
     kmeans = KMeans(n_clusters=class_cnt, random_state=0).fit(X=train_x)
     pred = kmeans.predict(X=val_x)
@@ -70,7 +98,7 @@ def main_kmean():
 
 def main_tree():
     print("starting decision tree process ...")
-    raw_x, raw_y = utils.read_data("data/data_all.csv", "mood_1")
+    raw_x, raw_y = utils.read_data("data/data_all_modified.csv", "mood_1")
     train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.85)
     model = tree.DecisionTreeClassifier()
     model.fit(X=train_x, y=train_y)

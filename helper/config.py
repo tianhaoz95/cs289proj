@@ -1,4 +1,4 @@
-iter_cnt = 50
+iter_cnt = 100
 sample_size = 1000
 
 # saved model needs to be deleted if change these
