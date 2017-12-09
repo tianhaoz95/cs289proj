@@ -7,6 +7,7 @@ from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Flatten
 from keras.optimizers import SGD
 from sklearn.cluster import KMeans
+from sklearn import tree
 
 def main_dnn():
     print("starting main dnn process ...")
@@ -64,6 +65,20 @@ def main_kmean():
     pred = kmeans.predict(X=val_x)
     print("predicted test set: ")
     print(pred)
+    accuracy = utils.eval_kmean(pred=pred, correct=val_y.tolist())
+    print("k means accuracy: ", accuracy)
+
+def main_tree():
+    print("starting decision tree process ...")
+    raw_x, raw_y = utils.read_data("data/data_all.csv", "mood_1")
+    train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.85)
+    model = tree.DecisionTreeClassifier()
+    model.fit(X=train_x, y=train_y)
+    pred = model.predict(X=train_x)
+    print("first row of prediction: ")
+    print(pred[0])
+    score = model.score(X=val_x, y=val_y)
+    print("decision tree score: ", score)
 
 if __name__ == "__main__":
     try:
@@ -71,6 +86,8 @@ if __name__ == "__main__":
             main_dnn()
         if config.train_mode == "kmean":
             main_kmean()
+        if config.train_mode == "tree":
+            main_tree()
     except ValueError as err:
         for e in err.args:
             print(e)

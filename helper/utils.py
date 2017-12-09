@@ -4,6 +4,35 @@ from .preprocess import FilterWrapper
 from .filters import *
 import numpy as np
 
+def eval_kmean(pred, correct):
+    if len(pred) != len(correct):
+        raise ValueError("prediction and correct have different length")
+    size = len(pred)
+    d = {}
+    for i in range(size):
+        correct_arr = correct[i]
+        correct_class = correct_arr.index(1)
+        pred_class = pred[i]
+        if correct_class not in d:
+            d[correct_class] = {}
+        if pred_class not in d[correct_class]:
+            d[correct_class][pred_class] = 0
+        d[correct_class][pred_class] = d[correct_class][pred_class] + 1
+    g_correct_cnt = 0
+    g_total_cnt = 0
+    for c in d:
+        pred_all = d[c]
+        max_cnt = 0
+        total_cnt = 0
+        for pred_key in pred_all:
+            pred_cnt = pred_all[pred_key]
+            max_cnt = max(max_cnt, pred_cnt)
+            total_cnt = total_cnt + pred_cnt
+        g_correct_cnt = g_correct_cnt + max_cnt
+        g_total_cnt = g_total_cnt + total_cnt
+    accuracy = g_correct_cnt / g_total_cnt
+    return accuracy
+
 def read_kmeans_data(filename_labeled, filename_unlabeled, label_name):
     raw_unlabeled_x, raw_unlabeled_y = read_data(filename_unlabeled, "not_available")
     raw_labeled_x, raw_labeled_y = read_data(filename_labeled, label_name)
@@ -24,7 +53,7 @@ def read_kmeans_data(filename_labeled, filename_unlabeled, label_name):
             val_y.append(raw_labeled_y[id_dict[label_id]])
         else:
             train_x.append(raw_unlabeled_x[i])
-    return np.array(train_x), np.array(val_x), val_y
+    return np.array(train_x), np.array(val_x), np.array(val_y)
 
 def read_data(filename, label_name):
     raw = pd.read_csv(filename)
@@ -61,28 +90,28 @@ def add_filters(filter_wrapper):
     # Basic filters
     filter_wrapper.add('danceability', BasicFilterFunc())
     filter_wrapper.add('energy', BasicFilterFunc())
-    filter_wrapper.add('key', BasicFilterFunc())
+    # filter_wrapper.add('key', BasicFilterFunc())
     filter_wrapper.add('loudness', BasicFilterFunc())
-    filter_wrapper.add('speechiness', BasicFilterFunc())
-    filter_wrapper.add('acousticness', BasicFilterFunc())
-    filter_wrapper.add('instrumentalness', BasicFilterFunc())
+    # filter_wrapper.add('speechiness', BasicFilterFunc())
+    # filter_wrapper.add('acousticness', BasicFilterFunc())
+    # filter_wrapper.add('instrumentalness', BasicFilterFunc())
     filter_wrapper.add('liveness', BasicFilterFunc())
-    filter_wrapper.add('valence', BasicFilterFunc())
-    filter_wrapper.add('tempo', BasicFilterFunc())
-    filter_wrapper.add('duration_ms', BasicFilterFunc())
+    # filter_wrapper.add('valence', BasicFilterFunc())
+    # filter_wrapper.add('tempo', BasicFilterFunc())
+    # filter_wrapper.add('duration_ms', BasicFilterFunc())
 
     # Shrinking filters
     filter_wrapper.add('danceability', ShrinkFilterFunc())
     filter_wrapper.add('energy', ShrinkFilterFunc())
-    filter_wrapper.add('key', ShrinkFilterFunc())
+    # filter_wrapper.add('key', ShrinkFilterFunc())
     filter_wrapper.add('loudness', ShrinkFilterFunc())
-    filter_wrapper.add('speechiness', ShrinkFilterFunc())
-    filter_wrapper.add('acousticness', ShrinkFilterFunc())
-    filter_wrapper.add('instrumentalness', ShrinkFilterFunc())
+    # filter_wrapper.add('speechiness', ShrinkFilterFunc())
+    # filter_wrapper.add('acousticness', ShrinkFilterFunc())
+    # filter_wrapper.add('instrumentalness', ShrinkFilterFunc())
     filter_wrapper.add('liveness', ShrinkFilterFunc())
-    filter_wrapper.add('valence', ShrinkFilterFunc())
-    filter_wrapper.add('tempo', ShrinkFilterFunc())
-    filter_wrapper.add('duration_ms', ShrinkFilterFunc())
+    # filter_wrapper.add('valence', ShrinkFilterFunc())
+    # filter_wrapper.add('tempo', ShrinkFilterFunc())
+    # filter_wrapper.add('duration_ms', ShrinkFilterFunc())
 
     # Categorical filters
     filter_wrapper.add('artist_era_1', CategoricalOneHotFilterFunc())
@@ -96,10 +125,11 @@ def add_filters(filter_wrapper):
     filter_wrapper.add('genre_1', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('genre_2', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('genre_3', CategoricalOneHotFilterFunc())
-    filter_wrapper.add('mood_1', CategoricalOneHotFilterFunc())
-    # filter_wrapper.add('mood_2', CategoricalOneHotFilterFunc())
     filter_wrapper.add('tempo_1', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('tempo_2', CategoricalOneHotFilterFunc())
     # filter_wrapper.add('tempo_3', CategoricalOneHotFilterFunc())
     filter_wrapper.add('time_signature', CategoricalOneHotFilterFunc())
     filter_wrapper.add('mode', CategoricalOneHotFilterFunc())
+    filter_wrapper.add('key', CategoricalOneHotFilterFunc())
+    filter_wrapper.add('mood_1', CategoricalOneHotFilterFunc(verbose=True))
+    # filter_wrapper.add('mood_2', CategoricalOneHotFilterFunc())

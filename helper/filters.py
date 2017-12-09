@@ -19,27 +19,41 @@ class BasicFilterFunc():
         return [abs(float(d))]
 
 class CategoricalOneHotFilterFunc(BasicFilterFunc):
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.dict = {}
+        self.verbose = verbose
 
     def preprocess(self, col):
+        if self.verbose:
+            print("verbose mode, printing ...")
         for r in col:
-            if r != 'NaN' and r not in self.dict:
+            if type(r) == 'str':
+                r = r.strip()
+            if r != 'NaN' and r != 'nan' and r not in self.dict:
+                if self.verbose:
+                    print(r)
                 self.dict[r] = len(self.dict)
 
     def prep(self, d, params):
         category_cnt = len(self.dict)
         res = [0 for i in range(category_cnt)]
-        if d != 'NaN':
+        if type(d) == 'str':
+            d = d.strip()
+        if d != 'NaN' and d != 'nan':
             res[self.dict[d]] = 1
         return res
 
 class CategoricalFilterFunc(BasicFilterFunc):
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.dict = {}
+        self.verbose = verbose
 
     def prep(self, d, params):
+        if self.verbose:
+            print("verbose mode, printing ...")
         if d not in self.dict:
+            if self.verbose:
+                print(d)
             self.dict[d] = len(self.dict) + 1
         return [self.dict[d]]
 
