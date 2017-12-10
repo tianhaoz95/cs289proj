@@ -100,7 +100,7 @@ from sklearn import svm
 try:
     svmclf = joblib.load('svmclf.pkl')
 except:
-    svmclf = svm.SVC(C=70)
+    svmclf = svm.SVC(C=50)
     svmclf.fit(X,y)
     joblib.dump(svmclf,'svmclf.pkl')
     
@@ -111,7 +111,7 @@ from sklearn.neighbors import KNeighborsClassifier
 try:
     knn = joblib.load('knn.pkl')
 except:
-    knn = KNeighborsClassifier(n_neighbors=5)
+    knn = KNeighborsClassifier(n_neighbors=4)
     knn.fit(X, y)
     joblib.dump(knn, 'knn.pkl')
 
