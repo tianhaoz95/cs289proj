@@ -1,6 +1,6 @@
 # CS289 Final Project
 
-## Goal: Learn mood for songs using spotify labels
+## Goal: Learn mood for songs using spotify tags
 
 ### Installation
 
