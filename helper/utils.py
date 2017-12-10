@@ -96,7 +96,7 @@ def add_filters(filter_wrapper):
     filter_wrapper.add('acousticness', BasicFilterFunc())
     filter_wrapper.add('instrumentalness', BasicFilterFunc())
     filter_wrapper.add('liveness', BasicFilterFunc())
-    # filter_wrapper.add('valence', BasicFilterFunc())
+    filter_wrapper.add('valence', BasicFilterFunc())
     # filter_wrapper.add('tempo', BasicFilterFunc())
     # filter_wrapper.add('duration_ms', BasicFilterFunc())
 
@@ -109,7 +109,7 @@ def add_filters(filter_wrapper):
     filter_wrapper.add('acousticness', ShrinkFilterFunc())
     filter_wrapper.add('instrumentalness', ShrinkFilterFunc())
     filter_wrapper.add('liveness', ShrinkFilterFunc())
-    # filter_wrapper.add('valence', ShrinkFilterFunc())
+    filter_wrapper.add('valence', ShrinkFilterFunc())
     # filter_wrapper.add('tempo', ShrinkFilterFunc())
     # filter_wrapper.add('duration_ms', ShrinkFilterFunc())
 

@@ -1,9 +1,9 @@
-iter_cnt = 100
+iter_cnt = 5
 sample_size = 1000
 
 # saved model needs to be deleted if change these
 train_batch = 200
-train_epochs = 10
+train_epochs = 100
 
 # the unique code of the model trained
 model_uid = "saved_model"
