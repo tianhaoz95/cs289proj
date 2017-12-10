@@ -11,6 +11,19 @@ from sklearn import tree
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 
+def main_sanity_check():
+    raw_x, raw_y = utils.read_data("data/data_all_modified.csv", "mood_1")
+    train_x, train_y, val_x, val_y = utils.partition_data(x=raw_x, y=raw_y, ratio=0.85)
+    dummy_y = val_y.tolist()
+    total = len(dummy_y)
+    correct = 0
+    sample = dummy_y[10]
+    for i in range(total):
+        if sample.index(1) == dummy_y[i].index(1):
+            correct = correct + 1
+    accuracy = correct / total
+    print("sanity check accuracy: ", accuracy)
+
 def main_dnn_depth():
     depths = [i for i in range(1, 11)]
     neural_cnt = 1000
@@ -292,6 +305,8 @@ def main_tree_search():
 
 if __name__ == "__main__":
     try:
+        if config.train_mode == "sanity_check":
+            main_sanity_check()
         if config.train_mode == "dnn":
             main_dnn()
         if config.train_mode == "kmean":
