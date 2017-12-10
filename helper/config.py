@@ -9,5 +9,11 @@ train_epochs = 10
 model_uid = "saved_model"
 
 # train_mode = "kmean"
-train_mode = "dnn"
+train_mode = "kmean_search"
+# train_mode = "dnn"
 # train_mode = "tree"
+# train_mode = "random_forest"
+# train_mode = "random_forest_search"
+# train_mode = "dnn_search"
+# train_mode = "tree_search"
+# train_mode = "dnn_depth_search"
